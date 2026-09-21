@@ -1,131 +1,170 @@
 #include <Arduino.h>
 
+#include "NO2Test.h"
+
 #include "../../config/Pins.h"
 #include "../../config/Settings.h"
 
-#include "../../drivers/DeviceController.h"
+#include "../../drivers/PumpController.h"
+#include "../../drivers/RelayController.h"
 
-#include "NO2Test.h"
+// ======================================
+// STEP 1 - TAKE WATER SAMPLE
+// ======================================
 
+void takeWaterSample()
+{
+    Serial.println();
+    Serial.println("[NO2] STEP 1");
+    Serial.println("Taking 5 ml water sample...");
 
-// ================================
-// STEP 1
-// LẤY NƯỚC
-// ================================
+    runPumpFor(
+        PIN_SAMPLE_PUMP,
+        SAMPLE_PUMP_TIME_MS
+    );
 
-void takeWater() {
-
-    Serial.println("STEP 1: TAKE WATER");
-
-    deviceOn(SAMPLE_PUMP);
-
-    delay(SAMPLE_WATER_TIME);
-
-    deviceOff(SAMPLE_PUMP);
+    Serial.println("Water sample completed.");
 }
 
 
-// ================================
-// STEP 2
-// DUNG DỊCH NO2 1
-// ================================
+// ======================================
+// STEP 2 - REAGENT 1
+// ======================================
 
-void addReagent1() {
+void addNO2Reagent1()
+{
+    Serial.println();
+    Serial.println("[NO2] STEP 2");
+    Serial.println("Adding reagent 1...");
 
-    Serial.println("STEP 2: ADD REAGENT 1");
+    doseDrops(
+        PIN_NO2_REAGENT_1_PUMP,
+        NO2_REAGENT_1_DROPS,
+        REAGENT_1_DROP_TIME_MS
+    );
 
-    deviceOn(NO2_PUMP_1);
-
-    delay(NO2_REAGENT_1_TIME);
-
-    deviceOff(NO2_PUMP_1);
+    Serial.println("Reagent 1 completed.");
 }
 
 
-// ================================
-// STEP 3
-// DUNG DỊCH NO2 2
-// ================================
+// ======================================
+// STEP 3 - REAGENT 2
+// ======================================
 
-void addReagent2() {
+void addNO2Reagent2()
+{
+    Serial.println();
+    Serial.println("[NO2] STEP 3");
+    Serial.println("Adding reagent 2...");
 
-    Serial.println("STEP 3: ADD REAGENT 2");
+    doseDrops(
+        PIN_NO2_REAGENT_2_PUMP,
+        NO2_REAGENT_2_DROPS,
+        REAGENT_2_DROP_TIME_MS
+    );
 
-    deviceOn(NO2_PUMP_2);
-
-    delay(NO2_REAGENT_2_TIME);
-
-    deviceOff(NO2_PUMP_2);
+    Serial.println("Reagent 2 completed.");
 }
 
 
-// ================================
-// STEP 4
-// WAIT REACTION
-// ================================
+// ======================================
+// STEP 4 - WAIT FOR COLOR
+// ======================================
 
-void waitForReaction() {
+void waitForNO2Reaction()
+{
+    Serial.println();
+    Serial.println("[NO2] STEP 4");
+    Serial.println("Waiting for reaction...");
 
-    Serial.println("STEP 4: WAIT FOR COLOR");
+    delay(NO2_REACTION_TIME_MS);
 
-    delay(NO2_REACTION_TIME);
+    Serial.println("Reaction time completed.");
 }
 
 
-// ================================
-// STEP 5
-// AI ANALYSIS
-// ================================
+// ======================================
+// STEP 5 - AI PLACEHOLDER
+// ======================================
 
-void analyzeNO2() {
+void requestNO2Analysis()
+{
+    Serial.println();
+    Serial.println("[NO2] STEP 5");
 
-    Serial.println("STEP 5: REQUEST AI ANALYSIS");
+    Serial.println(
+        "AI analysis requested..."
+    );
 
-    // Sau này gọi AIService ở đây
+    // Chưa kết nối AI ở V1.
+    // V2 sẽ gọi AIService ở đây.
+
+    delay(1000);
+
+    Serial.println(
+        "AI placeholder completed."
+    );
 }
 
 
-// ================================
-// STEP 6
-// XẢ
-// ================================
+// ======================================
+// STEP 6 - DRAIN
+// ======================================
 
-void drainTestWater() {
+void drainNO2Sample()
+{
+    Serial.println();
+    Serial.println("[NO2] STEP 6");
+    Serial.println("Draining test sample...");
 
-    Serial.println("STEP 6: DRAIN WATER");
+    drainFor(DRAIN_TIME_MS);
 
-    deviceOn(DRAIN_VALVE);
-
-    delay(DRAIN_TIME);
-
-    deviceOff(DRAIN_VALVE);
+    Serial.println("Drain completed.");
 }
 
 
-// ================================
-// FULL PROCESS
-// ================================
+// ======================================
+// COMPLETE NO2 TEST
+// ======================================
 
-void runNO2Test() {
+void runNO2Test()
+{
+    Serial.println();
+    Serial.println("===========================");
+    Serial.println("    CRABSENSE NO2 TEST");
+    Serial.println("===========================");
 
-    Serial.println("");
-    Serial.println("======================");
-    Serial.println("NO2 TEST START");
-    Serial.println("======================");
+    // Đảm bảo an toàn trước khi bắt đầu.
+    stopAllPumps();
+    closeDrainValve();
 
-    takeWater();
+    // 1. Lấy mẫu
+    takeWaterSample();
 
-    addReagent1();
+    // 2. Thuốc thử 1
+    addNO2Reagent1();
 
-    delay(3000);
+    // Chờ theo quy trình hóa chất
+    delay(WAIT_AFTER_REAGENT_1_MS);
 
-    addReagent2();
+    // 3. Thuốc thử 2
+    addNO2Reagent2();
 
-    waitForReaction();
+    // 4. Chờ phản ứng
+    waitForNO2Reaction();
 
-    analyzeNO2();
+    // 5. Camera / AI
+    requestNO2Analysis();
 
-    drainTestWater();
+    // 6. Xả
+    drainNO2Sample();
 
-    Serial.println("NO2 TEST FINISHED");
+    // Đảm bảo tất cả OFF
+    stopAllPumps();
+    closeDrainValve();
+
+    Serial.println();
+    Serial.println("===========================");
+    Serial.println("      NO2 TEST DONE");
+    Serial.println("===========================");
 }
