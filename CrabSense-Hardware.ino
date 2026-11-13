@@ -5,6 +5,7 @@
 #include "drivers/PumpController.h"
 #include "drivers/RelayController.h"
 #include "modules/NO2/NO2Test.h"
+#include "services/ControllerInventory.h"
 
 
 void printMenu()
@@ -52,6 +53,7 @@ void setup()
     Serial.println("CrabSense initialized.");
 
     printMenu();
+    startControllerInventoryReporter();
 }
 
 
