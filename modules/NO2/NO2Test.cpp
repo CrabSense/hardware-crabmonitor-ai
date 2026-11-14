@@ -84,7 +84,7 @@ void waitForNO2Reaction()
 
 
 // ======================================
-// STEP 5 - AI PLACEHOLDER
+// STEP 5 - ANALYSIS NOT INTEGRATED
 // ======================================
 
 void requestNO2Analysis()
@@ -92,18 +92,10 @@ void requestNO2Analysis()
     Serial.println();
     Serial.println("[NO2] STEP 5");
 
-    Serial.println(
-        "AI analysis requested..."
-    );
-
-    // Chưa kết nối AI ở V1.
-    // V2 sẽ gọi AIService ở đây.
-
-    delay(1000);
-
-    Serial.println(
-        "AI placeholder completed."
-    );
+    // No camera capture or inference is implemented in this board firmware.
+    // Do not create a numerical result or claim that a BE request succeeded.
+    Serial.println("NO2 analysis unavailable: camera/AI integration not configured.");
+    Serial.println("No NO2 measurement produced or published.");
 }
 
 
@@ -165,6 +157,6 @@ void runNO2Test()
 
     Serial.println();
     Serial.println("===========================");
-    Serial.println("      NO2 TEST DONE");
+    Serial.println("  NO2 FLUID SEQUENCE DONE (NO RESULT)");
     Serial.println("===========================");
 }
